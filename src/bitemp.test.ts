@@ -58,5 +58,5 @@ describe("bitemporal overlay", () => {
     }
     );
 
-    it.todo("implement");
+    it.todo("implement the logic for filter. THis will need a db as there could be multiple hits for different ids");
 })
