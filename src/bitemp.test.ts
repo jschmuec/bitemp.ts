@@ -84,4 +84,14 @@ describe("bitemporal overlay", () => {
             expect(latest_matching(doc, [].slice(1), { ingestion_time: 50 })).toBeUndefined;
         })
     })
+
+    describe("running this on MongoDB", () =>
+        it.todo("figure out how to get the full document and the mapping sub-documents back at the same time"))
+
+    describe("aggregate over documents in a stored proc/aggregation pipeline", () => {
+        it.todo("implement the aggregation pipelines first stages")
+    })
+
+    describe("use timeseries in MongoDB", () =>
+        it.todo("for highly mutable data with sparse overrides, e.g. market data, try it out"))
 })
