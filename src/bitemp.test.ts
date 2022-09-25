@@ -1,16 +1,17 @@
-type Observation = {
+type Observation<V> = {
     event_time: number;
     ingestion_time: number;
-    evt: any;
+    evt: V;
 };
 
-type Doc = Observation[];
+type Doc<V> = Observation<V>[];
 
-const observe = (doc: Doc, ingestion_time: number, evt: any, event_time: number): Doc =>
-    [...doc, { event_time, ingestion_time, evt }];
+function observe<V>(doc: Doc<V>, ingestion_time: number, evt: any, event_time: number): Doc<V> {
+    return [...doc, { event_time, ingestion_time, evt }];
+}
 
-const latest = (d: Doc, cut_off: { event_time?: number, ingestion_time?: number } = {}) =>
-    d.reduce((prev: Observation | undefined, current: Observation, currentIndex: number, d: Doc) => {
+function latest<V>(d: Doc<V>, cut_off: { event_time?: number, ingestion_time?: number } = {}) {
+    return d.reduce((prev: Observation<V> | undefined, current: Observation<V>, currentIndex: number, d: Doc<V>) => {
         if (cut_off.ingestion_time != undefined) {
             if (current.ingestion_time > cut_off.ingestion_time) {
                 return prev;
@@ -28,9 +29,10 @@ const latest = (d: Doc, cut_off: { event_time?: number, ingestion_time?: number 
             return current;
         }
     }, undefined);
+}
 
 
-const latest_matching = (doc: Doc, matches: Doc, cut_off: { ingestion_time?: number, event_time?: number } = {}) => {
+function latest_matching<V>(doc: Doc<V>, matches: Doc<V>, cut_off: { ingestion_time?: number, event_time?: number } = {}) {
     const l = latest(doc, cut_off)
     if (l && matches.includes(l)) {
         return l
@@ -48,7 +50,7 @@ describe("bitemporal overlay", () => {
         { ingestion_time: 400, event_time: 200 },
         ];
 
-    let doc = events.reduce((doc, evt) => observe(doc, evt.ingestion_time, `s: ${evt.ingestion_time}, e: ${evt.event_time}`, evt.event_time), [] as Doc)
+    let doc = events.reduce((doc, evt) => observe(doc, evt.ingestion_time, `s: ${evt.ingestion_time}, e: ${evt.event_time}`, evt.event_time), [] as Doc<string>)
 
     describe("picking the rights version", () => {
         test("latest() should return the observation with the highest event and system time", () => {
