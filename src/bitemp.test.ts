@@ -9,15 +9,15 @@ type Doc = Observation[];
 const observe = (doc: Doc, ingestion_time: number, evt: any, event_time: number): Doc =>
     [...doc, { event_time, ingestion_time, evt }];
 
-const latest = (d: Doc, { event_time = undefined, system_cut_off = undefined }: { event_time?: number, system_cut_off?: number } = {}) =>
+const latest = (d: Doc, cut_off: { event_time?: number, ingestion_time?: number } = {}) =>
     d.reduce((prev: Observation | undefined, current: Observation, currentIndex: number, d: Doc) => {
-        if (system_cut_off != undefined) {
-            if (current.ingestion_time > system_cut_off) {
+        if (cut_off.ingestion_time != undefined) {
+            if (current.ingestion_time > cut_off.ingestion_time) {
                 return prev;
             }
         }
-        if (event_time) {
-            if (current.event_time > event_time) {
+        if (cut_off.event_time) {
+            if (current.event_time > cut_off.event_time) {
                 return prev;
             }
         }
@@ -29,6 +29,15 @@ const latest = (d: Doc, { event_time = undefined, system_cut_off = undefined }: 
         }
     }, undefined);
 
+
+const latest_matching = (doc: Doc, matches: Doc, cut_off: { ingestion_time?: number, event_time?: number } = {}) => {
+    const l = latest(doc, cut_off)
+    if (l && matches.includes(l)) {
+        return l
+    }
+    return undefined
+}
+
 describe("bitemporal overlay", () => {
 
     let events: { ingestion_time: number, event_time: number }[] =
@@ -39,7 +48,7 @@ describe("bitemporal overlay", () => {
         { ingestion_time: 400, event_time: 200 },
         ];
 
-    let doc = events.reduce((doc, evt) => observe(doc, evt.ingestion_time, `s: ${evt.ingestion_time}, e: ${evt.event_time}`, evt.event_time), [] as Doc )
+    let doc = events.reduce((doc, evt) => observe(doc, evt.ingestion_time, `s: ${evt.ingestion_time}, e: ${evt.event_time}`, evt.event_time), [] as Doc)
 
     describe("picking the rights version", () => {
         test("latest() should return the observation with the highest event and system time", () => {
@@ -47,7 +56,7 @@ describe("bitemporal overlay", () => {
         })
 
         test("get the observation that happend before 50", () => {
-            expect(latest(doc, { system_cut_off: 50 })?.evt).toEqual("s: 0, e: 0");
+            expect(latest(doc, { ingestion_time: 50 })?.evt).toEqual("s: 0, e: 0");
         })
 
         test("get the state as per event_time 75", () => {
@@ -55,23 +64,22 @@ describe("bitemporal overlay", () => {
         })
 
         test("get the state as per system_time 125 and event_time 125", () => {
-            expect(latest(doc, { event_time: 125, system_cut_off: 125 })?.evt).toEqual("s: 100, e: 100");
+            expect(latest(doc, { event_time: 125, ingestion_time: 125 })?.evt).toEqual("s: 100, e: 100");
         }
         );
 
         test("get the state as per system_time 300 and event_time 125", () => {
-            expect(latest(doc, { event_time: 125, system_cut_off: 300 })?.evt).toEqual("s: 300, e: 100");
+            expect(latest(doc, { event_time: 125, ingestion_time: 300 })?.evt).toEqual("s: 300, e: 100");
         }
         );
     })
 
-    type database<K, V> = { get: (ps: { id: K, ingestion_time?: number, event_time?: number, filter?: (v: V) => boolean }) => V }
-
-    const latest_matching = ( ps : { doc : Doc, matches : Doc } ) => doc[0]
-
     describe("Testing with filters", () => {
         test("if all versions match, get the latest", () => {
-            expect( latest_matching( { doc, matches : doc })?.evt ).toEqual( latest( doc )?.evt )
+            expect(latest_matching(doc, doc, {})?.evt).toEqual(latest(doc)?.evt)
+        })
+        test("if the latest is not matching return undefined", () => {
+            expect(latest_matching(doc, [].slice(1), { ingestion_time: 50 })).toBeUndefined;
         })
     })
 })
