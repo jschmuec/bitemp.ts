@@ -1,0 +1,3 @@
+digraph ER {
+    market_data [ shape=record label="{Ticker|MDB|MDB|MDB|MDB|MDB}|{Observation Time|1|2|3|4|1}|{System Time|1.1|2.1|3.1|4.1|4.5}|{Value|213.30|209.95|214.55|215.65|202.70}"]
+}

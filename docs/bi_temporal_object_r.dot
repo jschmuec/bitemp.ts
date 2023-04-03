@@ -1,0 +1,18 @@
+digraph ER {
+    rankdir=LR
+    edge [
+    ]
+    positions [ shape=record label="Positions|{{Pos ID|1|2|3|4|5}|{TRADE ID|667|234|12|1234|667}|{System Time|1.1|2.1|3.1|4.1|4.5}|{Observation Time|1|2|3|4|5}|{Book|USD|EUR|CHF|USD|USD}|{Notional|<v1> 100k|200k|300K
+    |440K| <v5> 500k}}"]
+
+    schedule [ 
+        shape=record
+        label="Fixings|{{Pos ID|<s1> 1| <s2> 1|...| <s51> 5| <s52> 5|...}|{FixDate|2023-01-02|2023-04-03|...|2023-01-02|2023-04-03|...}|{PayDate|2023-01-04|2023-04-05|...|2023-01-04|2023-04-05|...}|{FixLevel|3.25|NULL|...|3.25|4.75|...}}"
+    ]
+
+    positions:v1 -> schedule:s1 [ id=1 ]
+    positions:v1 -> schedule:s2 [ id=1 ]
+
+    positions:v5 -> schedule:s51 [ id=1 ]
+    positions:v5 -> schedule:s52 [ id=1 ]
+}
