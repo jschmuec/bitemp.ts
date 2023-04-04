@@ -6,33 +6,37 @@ type Observation<V> = {
 
 type Doc<V> = Observation<V>[];
 
+type CutOff = { ingestion_time?: number, event_time?: number }
+
 function observe<V>(doc: Doc<V>, ingestion_time: number, evt: any, event_time: number): Doc<V> {
     return [...doc, { event_time, ingestion_time, evt }];
 }
 
-function latest<V>(d: Doc<V>, cut_off: { event_time?: number, ingestion_time?: number } = {}) {
-    return d.reduce((prev: Observation<V> | undefined, current: Observation<V>, currentIndex: number, d: Doc<V>) => {
-        if (cut_off.ingestion_time != undefined) {
-            if (current.ingestion_time > cut_off.ingestion_time) {
-                return prev;
-            }
-        }
-        if (cut_off.event_time) {
-            if (current.event_time > cut_off.event_time) {
-                return prev;
-            }
+function latest<V>(d: Doc<V>, cut_off: { event_time?: number, 
+    ingestion_time?: number } = {}) {
+    return d.reduce((prev: Observation<V> | undefined,
+        agg: Observation<V>, currentIndex: number, d: Doc<V>) => {
+        // filter out events that happened
+        if ((cut_off.ingestion_time && agg.ingestion_time > cut_off.ingestion_time)
+            || (cut_off.event_time && agg.event_time > cut_off.event_time)) {
+            return prev;
         }
 
-        if (prev && (prev.event_time > current.event_time || (prev.event_time == current.event_time && prev.ingestion_time > current.ingestion_time))) {
+        // pick the newest version
+        if (prev && (prev.event_time > agg.event_time
+            || (prev.event_time == agg.event_time 
+                && prev.ingestion_time > agg.ingestion_time))) {
             return prev
         } else {
-            return current;
+            return agg;
         }
     }, undefined);
 }
 
 
-function latest_matching<V>(doc: Doc<V>, matches: Doc<V>, cut_off: { ingestion_time?: number, event_time?: number } = {}) {
+
+
+function latest_matching<V>(doc: Doc<V>, matches: Doc<V>, cut_off: CutOff = {}) {
     const l = latest(doc, cut_off)
     if (l && matches.includes(l)) {
         return l
@@ -95,3 +99,74 @@ describe("bitemporal overlay", () => {
     describe("use timeseries in MongoDB", () =>
         it.todo("for highly mutable data with sparse overrides, e.g. market data, try it out"))
 })
+
+type Fixing = {
+    fixing_date: string,
+    pay_date: string,
+    fixed_rate?: string
+}
+
+type Swap = {
+    trade_id: string,
+    book: string,
+    notional: string
+    fixings: Fixing[]
+}
+//describe("bitemporal swaps", () => {
+let position: Observation<Swap>[] = []
+
+let swap: Swap = {
+    trade_id: "667",
+    book: "USD",
+    notional: "100k",
+    fixings: [{ fixing_date: "2023-01-02", pay_date: "2023-01-04" },
+    { fixing_date: "2023-04-03", pay_date: "2023-04-05" }
+    ]
+}
+
+let fixed_swap: Swap = { ...swap, notional: "500k" }
+
+var p = observe(position, 1.1, swap, 1)
+p = observe(p, 4.1, fixed_swap, 1)
+
+console.log(p)
+
+var r = [
+    {
+        "event_time": 1,
+        "ingestion_time": 1.1,
+        "evt": {
+            "trade_id": "667", "book": "USD", "notional": "100k",
+            "fixings": [
+                { "fixing_date": "2023-01-02", "pay_date": "2023-01-04" },
+                { "fixing_date": "2023-04-03", "pay_date": "2023-04-05" }
+            ]
+        }
+    }
+]
+
+var r2 =
+    [
+        {
+            event_time: 1,
+            ingestion_time: 1.1,
+            evt: {
+                trade_id: '667',
+                book: 'USD',
+                notional: '100k',
+                fixings: [Array]
+            }
+        },
+        {
+            event_time: 1,
+            ingestion_time: 4.1,
+            evt: {
+                trade_id: '667',
+                book: 'USD',
+                notional: '500k',
+                fixings: [Array]
+            }
+        }
+    ]
+
+//})
