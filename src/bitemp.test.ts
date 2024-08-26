@@ -33,9 +33,6 @@ function latest<V>(d: Doc<V>, cut_off: { event_time?: number,
     }, undefined);
 }
 
-
-
-
 function latest_matching<V>(doc: Doc<V>, matches: Doc<V>, cut_off: CutOff = {}) {
     const l = latest(doc, cut_off)
     if (l && matches.includes(l)) {
@@ -89,15 +86,9 @@ describe("bitemporal overlay", () => {
         })
     })
 
-    describe("running this on MongoDB", () =>
-        it.todo("figure out how to get the full document and the mapping sub-documents back at the same time"))
-
     describe("aggregate over documents in a stored proc/aggregation pipeline", () => {
         it.todo("implement the aggregation pipelines first stages")
     })
-
-    describe("use timeseries in MongoDB", () =>
-        it.todo("for highly mutable data with sparse overrides, e.g. market data, try it out"))
 })
 
 type Fixing = {
@@ -112,7 +103,9 @@ type Swap = {
     notional: string
     fixings: Fixing[]
 }
+
 //describe("bitemporal swaps", () => {
+// just some example code to see how this could be used
 let position: Observation<Swap>[] = []
 
 let swap: Swap = {
@@ -131,6 +124,7 @@ p = observe(p, 4.1, fixed_swap, 1)
 
 console.log(p)
 
+// data structures for easy testing
 var r = [
     {
         "event_time": 1,
