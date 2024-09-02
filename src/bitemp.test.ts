@@ -12,8 +12,10 @@ function observe<V>(doc: Doc<V>, ingestion_time: number, evt: any, event_time: n
     return [...doc, { event_time, ingestion_time, evt }];
 }
 
-function latest<V>(d: Doc<V>, cut_off: { event_time?: number, 
-    ingestion_time?: number } = {}) {
+function latest<V>(d: Doc<V>, cut_off: {
+    event_time?: number,
+    ingestion_time?: number
+} = {}) {
     return d.reduce((prev: Observation<V> | undefined,
         agg: Observation<V>, currentIndex: number, d: Doc<V>) => {
         // filter out events that happened
@@ -24,7 +26,7 @@ function latest<V>(d: Doc<V>, cut_off: { event_time?: number,
 
         // pick the newest version
         if (prev && (prev.event_time > agg.event_time
-            || (prev.event_time == agg.event_time 
+            || (prev.event_time == agg.event_time
                 && prev.ingestion_time > agg.ingestion_time))) {
             return prev
         } else {
@@ -117,12 +119,14 @@ let swap: Swap = {
     ]
 }
 
-let fixed_swap: Swap = { ...swap, notional: "500k" }
+if (false) {
+    let fixed_swap: Swap = { ...swap, notional: "500k" }
 
-var p = observe(position, 1.1, swap, 1)
-p = observe(p, 4.1, fixed_swap, 1)
+    var p = observe(position, 1.1, swap, 1)
+    p = observe(p, 4.1, fixed_swap, 1)
 
-console.log(p)
+    console.log(p)
+}
 
 // data structures for easy testing
 var r = [
@@ -164,5 +168,3 @@ var r2 =
     ]
 
 //})
-
-console.log("DID RUN")
