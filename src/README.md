@@ -10,7 +10,7 @@ Queries are implemented by querying all the versions across all documents, retri
 Details
 ===
 
-The database is represented by a map that stores JSON data elements. This allows to run the code in memory on a developer machine and simplifies it sginficantly. Queries are just simple filters. 
+The database is represented by a map that stores JSON data elements. This allows to run the code in memory on a developer machine and simplifies it sginficantly. Queries are just simple filters. This can easily be replaced by MongoDB as a data store and query engine.
 
 Limitations
 ===
