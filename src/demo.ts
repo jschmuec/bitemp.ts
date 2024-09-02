@@ -29,7 +29,7 @@ let swap: Swap = {
 
 function logjson( json : any ) {
     console.log("```json")
-    console.log(JSON.stringify( json ))
+    console.log(JSON.stringify( json , null, 2))
     console.log("```")
 }
 
