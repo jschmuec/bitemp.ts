@@ -9,7 +9,7 @@ export type Doc<V> = Observation<V>[];
 
 export type CutOff = { ingestion_time?: number, event_time?: number }
 
-export function observe<V>(doc: Doc<V>, ingestion_time: number, evt: any, event_time: number): Doc<V> {
+  export function observe<V>(doc: Doc<V>, ingestion_time: number, evt: any, event_time: number): Doc<V> {
     return [...doc, { event_time, ingestion_time, evt }];
 }
 
@@ -43,5 +43,3 @@ export function latest_matching<V>(doc: Doc<V>, matches: Doc<V>, cut_off: CutOff
     }
     return undefined
 }
-
-export default { latest, latest_matching, observe }

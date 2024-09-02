@@ -1,4 +1,4 @@
-import * as bt from "./bitemp.js"
+import { observe, Observation, latest } from "./bitemp"
 
 // create a sample data structure
 type Fixing = {
@@ -16,7 +16,7 @@ type Swap = {
 
 //describe("bitemporal swaps", () => {
 // just some example code to see how this could be used
-let position: bt.Observation<Swap>[] = []
+let position: Observation<Swap>[] = []
 
 let swap: Swap = {
     trade_id: "667",
@@ -27,17 +27,39 @@ let swap: Swap = {
     ]
 }
 
-console.log("First version of an IRS:");
-console.log( swap );
+function logcode( code : any ) {
+    console.log("```json")
+    console.log(code)
+    console.log("```")
+}
 
+console.log("# Storing the initial version\n")
+console.log("## First version of an IRS:\n");
+logcode( swap )
+
+
+console.log("## Observing this version at 1.1 as it was created at time 1.0\n");
+var p =  observe(position, 1.1, swap, 1.0)
+
+logcode( p )
+
+console.log("# Changing the swap at time 4.1\n")
 let fixed_swap: Swap = { ...swap, notional: "500k" }
+p =  observe(p, 4.1, fixed_swap, 1)
 
-var p = bt.observe(position, 1.1, swap, 1)
-p = bt.observe(p, 4.1, fixed_swap, 1)
+console.log("The fixed swap looks like this\n")
+logcode(fixed_swap)
+console.log("## And the document looks like this now:")
+logcode(p)
 
-console.log(p)
+function header( s : any ) {
+    console.log( `# ${s}`)
+}
 
-// data structures for easy testing
+header( "Now we retrieve the swap as per time 2.0")
+logcode( latest( p, { event_time: 1, ingestion_time: 1.1 } ) )
+
+// data structures to play aroudn with
 var r = [
     {
         "event_time": 1,

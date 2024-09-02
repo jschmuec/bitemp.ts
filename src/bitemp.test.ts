@@ -1,4 +1,4 @@
-import { observe, latest, latest_matching, Observation, Doc } from "./bitemp.js"
+import { observe, Observation, Doc, latest, latest_matching } from "./bitemp"
 
 describe("bitemporal overlay", () => {
 
