@@ -7,6 +7,8 @@ This approach allows to insert a new version anywhere into the timeline without 
 
 Queries are implemented by querying all the versions across all documents, retrieving the correct version of the document and validating that the retrieved version is the version that was life at the given time-point. 
 
+All the code is in one file `bitemp.test.ts` for simplicity sake.
+
 Details
 ===
 
