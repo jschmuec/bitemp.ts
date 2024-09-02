@@ -69,8 +69,12 @@ header2( "... and record that change at time 10.1")
 p = observe( p, 10.1, fixed_swap, 10.1)
 logjson(p)
 
-header2("When we retrive as per time 2.0 again, it hasn't changed")
+header2("When we retrive as per time observation time 2.0 again, it hasn't changed")
 logjson( latest( p, { event_time: 1, ingestion_time: 2.0 } ) )
+
+header2("Nor has it when we retrieve it as per event time 5, i.e. before the fixing.")
+logjson( latest( p, { event_time: 5} ) )
+
 
 // data structures to play aroudn with
 var r = [

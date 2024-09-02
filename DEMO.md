@@ -218,7 +218,7 @@ The fixed swap looks like this
   }
 ]
 ```
-## When we retrive as per time 2.0 again, it hasn't changed
+## When we retrive as per time observation time 2.0 again, it hasn't changed
 ```json
 {
   "event_time": 1,
@@ -227,6 +227,28 @@ The fixed swap looks like this
     "trade_id": "667",
     "book": "USD",
     "notional": "100k",
+    "fixings": [
+      {
+        "fixing_date": "2023-01-02",
+        "pay_date": "2023-01-04"
+      },
+      {
+        "fixing_date": "2023-04-03",
+        "pay_date": "2023-04-05"
+      }
+    ]
+  }
+}
+```
+## Nor has it when we retrieve it as per event time 5, i.e. before the fixing.
+```json
+{
+  "event_time": 1,
+  "ingestion_time": 4.1,
+  "evt": {
+    "trade_id": "667",
+    "book": "USD",
+    "notional": "500k",
     "fixings": [
       {
         "fixing_date": "2023-01-02",
