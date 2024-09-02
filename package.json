@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "dev": "dist/bitemp.test.js"
+    "build": "tsc -p .",
+    "start": "npm run build -- -w",
+    "exec": "node dist/index.js",
+    "sample": "npm run build exec"
   },
   "keywords": [],
   "author": "",
