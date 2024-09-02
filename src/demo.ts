@@ -27,37 +27,37 @@ let swap: Swap = {
     ]
 }
 
-function logcode( code : any ) {
+function logjson( json : any ) {
     console.log("```json")
-    console.log(code)
+    console.log(JSON.stringify( json ))
     console.log("```")
 }
 
 console.log("# Storing the initial version\n")
 console.log("## First version of an IRS:\n");
-logcode( swap )
+logjson( swap )
 
 
 console.log("## Observing this version at 1.1 as it was created at time 1.0\n");
 var p =  observe(position, 1.1, swap, 1.0)
 
-logcode( p )
+logjson( p )
 
 console.log("# Changing the swap at time 4.1\n")
 let fixed_swap: Swap = { ...swap, notional: "500k" }
 p =  observe(p, 4.1, fixed_swap, 1)
 
 console.log("The fixed swap looks like this\n")
-logcode(fixed_swap)
+logjson(fixed_swap)
 console.log("## And the document looks like this now:")
-logcode(p)
+logjson(p)
 
 function header( s : any ) {
     console.log( `# ${s}`)
 }
 
 header( "Now we retrieve the swap as per time 2.0")
-logcode( latest( p, { event_time: 1, ingestion_time: 1.1 } ) )
+logjson( latest( p, { event_time: 1, ingestion_time: 1.1 } ) )
 
 // data structures to play aroudn with
 var r = [
