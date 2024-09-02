@@ -44,20 +44,33 @@ var p =  observe(position, 1.1, swap, 1.0)
 logjson( p )
 
 console.log("# Changing the swap at time 4.1\n")
-let fixed_swap: Swap = { ...swap, notional: "500k" }
-p =  observe(p, 4.1, fixed_swap, 1)
+let changed_swap: Swap = { ...swap, notional: "500k" }
+p =  observe(p, 4.1, changed_swap, 1)
 
 console.log("The fixed swap looks like this\n")
-logjson(fixed_swap)
+logjson(changed_swap)
 console.log("## And the document looks like this now:")
 logjson(p)
 
 function header( s : any ) {
     console.log( `# ${s}`)
 }
+function header2( s : any ) {
+    console.log( `## ${s}`)
+}
 
 header( "Now we retrieve the swap as per time 2.0")
-logjson( latest( p, { event_time: 1, ingestion_time: 1.1 } ) )
+logjson( latest( p, { event_time: 1, ingestion_time: 2.0 } ) )
+
+header( "Let's add a new fixing to this swap")
+const fixed_swap = { ...swap, fixings : [... swap.fixings, { fixing_date: "2023-05-03", pay_date: "2023-05-05" }]}
+logjson( fixed_swap);
+header2( "... and record that change at time 10.1")
+p = observe( p, 10.1, fixed_swap, 10.1)
+logjson(p)
+
+header2("When we retrive as per time 2.0 again, it hasn't changed")
+logjson( latest( p, { event_time: 1, ingestion_time: 2.0 } ) )
 
 // data structures to play aroudn with
 var r = [
