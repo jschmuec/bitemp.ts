@@ -12,6 +12,8 @@ Queries are implemented by querying all the versions across all documents, retri
 npm run demo
 ```
 
+There is a similar example that can be found at the [MongoDB Developer Website](https://www.mongodb.com/developer/products/mongodb/how-maintain-multiple-versions-record-mongodb/)
+
 Details
 ===
 
