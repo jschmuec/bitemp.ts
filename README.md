@@ -24,7 +24,7 @@ Limitations
 
 Data size:
 ---
- In order to be able to use the native query language of MongoDB, the versions cannot be compressed into deltas that need to be applied to reconstruct the version. If there is no need/wish to use the native MongoDB query language across values, then deltas can be used to store versions backwards or forwards. In the backwards versioning, each version shows what was changed when the next version is written. A simple non-bi-temp:
+ In order to be able to use the native query language of MongoDB, the versions are not compressed into deltas that need to be applied to reconstruct the version. If there is no need/wish to use the native MongoDB query language across values, then deltas can be used to store versions backwards or forwards. In the backwards versioning, each version shows what was changed when the next version is written. A simple non-bi-temp:
 
  Given an object with version 1:
  ```Javascript
